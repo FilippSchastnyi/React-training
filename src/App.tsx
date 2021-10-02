@@ -1,17 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import useHttp from './hooks/http-hook';
 import Table from './components/Table/Table';
+import config from './config/default.json';
 
 const App: React.FC = () => {
   const { request } = useHttp();
-  const [cardOperationsData, setCardOperationsData] = useState();
+  const [cardOperationsData, setCardOperationsData] = useState<any>([]);
 
   const getCardOperationsData = async () => {
     try {
-      const response = await request(`https://api-dev.fidel.uk/v1d/programs/`, 'GET', null, {
-        'fidel-key': 'sk_test_8b665908-284c-4dd1-a364-7ebc575c18f6',
+      const response = await request(config.fidelUrl, 'GET', null, {
+        'fidel-key': config.key,
       });
       if (response) {
+        console.log(response.items);
         setCardOperationsData(response.items);
       }
     } catch (e) {
@@ -23,13 +25,11 @@ const App: React.FC = () => {
     getCardOperationsData();
   }, []);
 
-  if (cardOperationsData === false) return null;
-
-  console.log(cardOperationsData);
+  if (!cardOperationsData) return null;
 
   return (
     <div className="container">
-      <Table />
+      <Table items={cardOperationsData} />
     </div>
   );
 };

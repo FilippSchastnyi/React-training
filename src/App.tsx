@@ -2,9 +2,10 @@ import React, { useEffect, useState } from 'react';
 import useHttp from './hooks/http-hook';
 import Table from './components/Table/Table';
 import config from './config/default.json';
+import Loader from './components/Loader/Loader';
 
 const App: React.FC = () => {
-  const { request } = useHttp();
+  const { request, loading } = useHttp();
   const [cardOperationsData, setCardOperationsData] = useState<any>([]);
 
   const getCardOperationsData = async () => {
@@ -25,11 +26,22 @@ const App: React.FC = () => {
     getCardOperationsData();
   }, []);
 
+  const sortTableByParams = (fieldName: string) => {
+    const sortData = [...cardOperationsData].sort((a, b): any => {
+      return a[fieldName] > b[fieldName] ? 1 : -1;
+    });
+    setCardOperationsData(sortData);
+  };
+
   if (!cardOperationsData) return null;
 
   return (
     <div className="container">
-      <Table items={cardOperationsData} />
+      {loading ? (
+        <Loader />
+      ) : (
+        <Table programsData={cardOperationsData} sortTableByParams={sortTableByParams} />
+      )}
     </div>
   );
 };

@@ -1,22 +1,50 @@
 import React, { FC } from 'react';
 
-const Table: FC<any> = ({ items }) => {
-  if (!items) return null;
-  console.log(items);
+const Table: FC<any> = ({ programsData, sortTableByParams }) => {
+  if (!programsData) return null;
+
   return (
     <div>
       <table className="table">
         <thead>
           <tr>
             <th scope="col">#</th>
-            <th scope="col">Name</th>
-            <th scope="col">Status</th>
-            <th scope="col">Created</th>
-            <th scope="col">Updated</th>
+            <th
+              scope="col"
+              onClick={() => {
+                sortTableByParams('name');
+              }}
+            >
+              Name
+            </th>
+            <th
+              scope="col"
+              onClick={() => {
+                sortTableByParams('Status');
+              }}
+            >
+              Status
+            </th>
+            <th
+              scope="col"
+              onClick={() => {
+                sortTableByParams('Created');
+              }}
+            >
+              Created
+            </th>
+            <th
+              scope="col"
+              onClick={() => {
+                sortTableByParams('Updated');
+              }}
+            >
+              Updated
+            </th>
           </tr>
         </thead>
         <tbody>
-          {items.map((row: any, idx: number) => {
+          {programsData.map((row: any, idx: number) => {
             return (
               <tr key={row.id}>
                 <td scope="row">{idx + 1}</td>

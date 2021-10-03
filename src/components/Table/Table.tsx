@@ -1,55 +1,67 @@
-import React, { FC } from 'react';
+import React, { FC, useState } from 'react';
 
-const Table: FC<any> = ({ programsData, sortTableByParams }) => {
+const Table: FC<any> = ({ programsData, sortTableByParams, direction }) => {
+  const [fieldSortingState, setFieldSortingState] = useState('');
+
   if (!programsData) return null;
+
+  const onHandleSortBtnClick = (fieldName: string) => {
+    sortTableByParams(fieldName);
+    setFieldSortingState(fieldName);
+  };
+
+  const showArrow = () => {
+    return direction ? (
+      <i className="bi bi-chevron-bar-up"></i>
+    ) : (
+      <i className="bi bi-chevron-bar-down"></i>
+    );
+  };
 
   return (
     <div>
       <table className="table">
         <thead>
           <tr>
-            <th scope="col">#</th>
             <th
               scope="col"
               onClick={() => {
-                sortTableByParams('name');
+                onHandleSortBtnClick('name');
               }}
             >
-              Name
+              <p>
+                <span className="me-4">Name</span>
+              </p>
             </th>
             <th
               scope="col"
               onClick={() => {
-                sortTableByParams('Status');
+                onHandleSortBtnClick('created');
               }}
             >
-              Status
+              <p>
+                <span className="me-4">Created</span>
+                {fieldSortingState === 'created' ? showArrow() : null}
+              </p>
             </th>
             <th
               scope="col"
               onClick={() => {
-                sortTableByParams('Created');
+                onHandleSortBtnClick('updated');
               }}
             >
-              Created
-            </th>
-            <th
-              scope="col"
-              onClick={() => {
-                sortTableByParams('Updated');
-              }}
-            >
-              Updated
+              <p>
+                <span className="me-4">Updated</span>
+                {fieldSortingState === 'updated' ? showArrow() : null}
+              </p>
             </th>
           </tr>
         </thead>
         <tbody>
-          {programsData.map((row: any, idx: number) => {
+          {programsData.map((row: any) => {
             return (
               <tr key={row.id}>
-                <td scope="row">{idx + 1}</td>
                 <td>{row.name}</td>
-                <td>{row.active ? 'active' : 'not active'}</td>
                 <td>{row.created}</td>
                 <td>{row.updated}</td>
               </tr>

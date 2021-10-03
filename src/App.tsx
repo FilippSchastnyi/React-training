@@ -7,6 +7,7 @@ import Loader from './components/Loader/Loader';
 const App: React.FC = () => {
   const { request, loading } = useHttp();
   const [cardOperationsData, setCardOperationsData] = useState<any>([]);
+  const [sortDirection, setSortDirection] = useState<boolean>(true);
 
   const getCardOperationsData = async () => {
     try {
@@ -27,10 +28,19 @@ const App: React.FC = () => {
   }, []);
 
   const sortTableByParams = (fieldName: string) => {
-    const sortData = [...cardOperationsData].sort((a, b): any => {
-      return a[fieldName] > b[fieldName] ? 1 : -1;
-    });
-    setCardOperationsData(sortData);
+    if (sortDirection) {
+      const sortData = [...cardOperationsData].sort((a, b): any => {
+        return a[fieldName] > b[fieldName] ? 1 : -1;
+      });
+      setCardOperationsData(sortData);
+    } else {
+      const sortData = [...cardOperationsData].sort((a, b): any => {
+        return a[fieldName] > b[fieldName] ? -1 : 1;
+      });
+      setCardOperationsData(sortData);
+    }
+
+    setSortDirection(!sortDirection);
   };
 
   if (!cardOperationsData) return null;
@@ -40,7 +50,11 @@ const App: React.FC = () => {
       {loading ? (
         <Loader />
       ) : (
-        <Table programsData={cardOperationsData} sortTableByParams={sortTableByParams} />
+        <Table
+          programsData={cardOperationsData}
+          sortTableByParams={sortTableByParams}
+          direction={sortDirection}
+        />
       )}
     </div>
   );

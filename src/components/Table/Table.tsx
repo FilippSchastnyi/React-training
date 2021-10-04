@@ -1,6 +1,6 @@
 import React, { FC, useState } from 'react';
 
-const Table: FC<any> = ({ programsData, sortTableByParams, direction }) => {
+const Table: FC<any> = ({ programsData, sortTableByParams, direction, setDetailsRow }) => {
   const [fieldSortingState, setFieldSortingState] = useState('');
 
   if (!programsData) return null;
@@ -60,7 +60,7 @@ const Table: FC<any> = ({ programsData, sortTableByParams, direction }) => {
         <tbody>
           {programsData.map((row: any) => {
             return (
-              <tr key={row.id}>
+              <tr key={row.id} onClick={() => setDetailsRow(row)}>
                 <td>{row.name}</td>
                 <td>{row.created}</td>
                 <td>{row.updated}</td>

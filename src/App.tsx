@@ -3,19 +3,33 @@ import useHttp from './hooks/http-hook';
 import Table from './components/Table/Table';
 import config from './config/default.json';
 import Loader from './components/Loader/Loader';
+import TableDetails from './components/Table/TableDetails/TableDetails';
+// eslint-disable-next-line no-unused-vars
+import ReactPaginate from 'react-paginate';
 
 const App: React.FC = () => {
   const { request, loading } = useHttp();
   const [cardOperationsData, setCardOperationsData] = useState<any>([]);
   const [sortDirection, setSortDirection] = useState<boolean>(true);
+  const [rowDetails, setRowDetails] = useState<any>('');
+  // eslint-disable-next-line no-unused-vars
+  const [pageNumber, setPageNumber] = useState<number>(0);
+
+  const usersPerPage = 10;
+  const pagesVisited = pageNumber * usersPerPage;
+  const displayUsers = cardOperationsData.slice(pagesVisited, pagesVisited + usersPerPage);
+  const pageCount = Math.ceil(cardOperationsData.length / usersPerPage);
+  const changePage = ({ selected }: any) => {
+    setPageNumber(selected);
+  };
 
   const getCardOperationsData = async () => {
     try {
-      const response = await request(config.fidelUrl, 'GET', null, {
+      const response = await request(`https://api-dev.fidel.uk/v1d/programs/`, 'GET', null, {
         'fidel-key': config.key,
       });
       if (response) {
-        console.log(response.items);
+        console.log(response.last);
         setCardOperationsData(response.items);
       }
     } catch (e) {
@@ -43,6 +57,11 @@ const App: React.FC = () => {
     setSortDirection(!sortDirection);
   };
 
+  const setDetailsRow = (row: any) => {
+    setRowDetails(row);
+    console.log(row);
+  };
+
   if (!cardOperationsData) return null;
 
   return (
@@ -50,11 +69,30 @@ const App: React.FC = () => {
       {loading ? (
         <Loader />
       ) : (
-        <Table
-          programsData={cardOperationsData}
-          sortTableByParams={sortTableByParams}
-          direction={sortDirection}
-        />
+        <>
+          <Table
+            programsData={displayUsers}
+            sortTableByParams={sortTableByParams}
+            direction={sortDirection}
+            setDetailsRow={setDetailsRow}
+          />
+          <ReactPaginate
+            previousLabel={'Previous'}
+            pageClassName={'page-item'}
+            pageLinkClassName={'page-link'}
+            nextLabel={'Next'}
+            pageCount={pageCount}
+            onPageChange={changePage}
+            containerClassName={'pagination'}
+            previousLinkClassName={'page-link'}
+            nextLinkClassName={'page-link'}
+            disabledClassName={'disabled'}
+            activeClassName={'active'}
+            pageRangeDisplayed={2}
+            marginPagesDisplayed={2}
+          />
+          <TableDetails rowData={rowDetails} />
+        </>
       )}
     </div>
   );

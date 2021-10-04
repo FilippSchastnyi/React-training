@@ -89,7 +89,7 @@ const App: React.FC = () => {
             disabledClassName={'disabled'}
             activeClassName={'active'}
             pageRangeDisplayed={2}
-            marginPagesDisplayed={2}
+            marginPagesDisplayed={0}
           />
           <TableDetails rowData={rowDetails} />
         </>

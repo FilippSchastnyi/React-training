@@ -5,29 +5,28 @@ import config from './config/default.json';
 import Loader from './components/Loader/Loader';
 import TableDetails from './components/Table/TableDetails/TableDetails';
 import ReactPaginate from 'react-paginate';
+import { ITableData } from './interfaces/Table/ITableData';
+import { paginationSettings } from './Helper/PaginationHelper';
 
 const App: React.FC = () => {
   const { request, loading } = useHttp();
-  const [cardOperationsData, setCardOperationsData] = useState<any>([]);
+  const [cardOperationsData, setCardOperationsData] = useState<ITableData[]>([]);
   const [sortDirection, setSortDirection] = useState<boolean>(true);
-  const [rowDetails, setRowDetails] = useState<any>('');
   const [pageNumber, setPageNumber] = useState<number>(0);
-
-  const pagination = {
-    usersPerPage: 10,
-    pagesVisited: function () {
-      return pageNumber * this.usersPerPage;
-    },
-    displayUsers: function () {
-      return cardOperationsData.slice(this.pagesVisited(), this.pagesVisited() + this.usersPerPage);
-    },
-    pageCount: function () {
-      return Math.ceil(cardOperationsData.length / this.usersPerPage);
-    },
-    changePage: function ({ selected }: any) {
-      setPageNumber(selected);
-    },
-  };
+  const [rowDetails, setRowDetails] = useState<ITableData>({
+    accountId: '',
+    active: false,
+    activeDate: '',
+    created: '',
+    icon: '',
+    iconBackground: '',
+    id: '',
+    live: false,
+    name: '',
+    sync: false,
+    syncStats: { status: '' },
+    updated: '',
+  });
 
   const getCardOperationsData = async () => {
     try {
@@ -49,12 +48,12 @@ const App: React.FC = () => {
 
   const sortTableByParams = (fieldName: string) => {
     if (sortDirection) {
-      const sortData = [...cardOperationsData].sort((a, b): any => {
+      const sortData = [...cardOperationsData].sort((a: any, b: any) => {
         return a[fieldName] > b[fieldName] ? 1 : -1;
       });
       setCardOperationsData(sortData);
     } else {
-      const sortData = [...cardOperationsData].sort((a, b): any => {
+      const sortData = [...cardOperationsData].sort((a: any, b: any) => {
         return a[fieldName] > b[fieldName] ? -1 : 1;
       });
       setCardOperationsData(sortData);
@@ -63,13 +62,33 @@ const App: React.FC = () => {
     setSortDirection(!sortDirection);
   };
 
-  const setDetailsRow = (row: any) => {
+  const setDetailsRow = (row: ITableData) => {
     setRowDetails(row);
   };
 
   const removeTableDetails = () => {
-    setRowDetails('');
+    setRowDetails({
+      accountId: '',
+      active: false,
+      activeDate: '',
+      created: '',
+      icon: '',
+      iconBackground: '',
+      id: '',
+      live: false,
+      name: '',
+      sync: false,
+      syncStats: { status: '' },
+      updated: '',
+    });
   };
+
+  const { displayUsers, pageCount, changePage } = paginationSettings(
+    pageNumber,
+    cardOperationsData,
+    setPageNumber,
+    10
+  );
 
   if (!cardOperationsData) return null;
 
@@ -80,7 +99,7 @@ const App: React.FC = () => {
       ) : (
         <>
           <Table
-            programsData={pagination.displayUsers()}
+            programsData={displayUsers}
             sortTableByParams={sortTableByParams}
             direction={sortDirection}
             setDetailsRow={setDetailsRow}
@@ -90,8 +109,8 @@ const App: React.FC = () => {
             pageClassName={'page-item'}
             pageLinkClassName={'page-link'}
             nextLabel={'Next'}
-            pageCount={pagination.pageCount()}
-            onPageChange={pagination.changePage}
+            pageCount={pageCount}
+            onPageChange={changePage}
             containerClassName={'pagination'}
             previousLinkClassName={'page-link'}
             nextLinkClassName={'page-link'}

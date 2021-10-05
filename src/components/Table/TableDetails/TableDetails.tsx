@@ -1,7 +1,13 @@
 import React, { FC } from 'react';
 import moment from 'moment';
+import { ITableData } from '../../../interfaces/Table/ITableData';
 
-const TableDetails: FC<any> = ({ rowData, removeTableDetails }) => {
+interface TableListProps {
+  rowData: ITableData;
+  removeTableDetails: () => void;
+}
+
+const TableDetails: FC<TableListProps> = ({ rowData, removeTableDetails }) => {
   if (!rowData) return null;
 
   return (

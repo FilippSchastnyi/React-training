@@ -4,7 +4,6 @@ import Table from './components/Table/Table';
 import config from './config/default.json';
 import Loader from './components/Loader/Loader';
 import TableDetails from './components/Table/TableDetails/TableDetails';
-// eslint-disable-next-line no-unused-vars
 import ReactPaginate from 'react-paginate';
 
 const App: React.FC = () => {

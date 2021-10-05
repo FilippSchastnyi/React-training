@@ -12,15 +12,22 @@ const App: React.FC = () => {
   const [cardOperationsData, setCardOperationsData] = useState<any>([]);
   const [sortDirection, setSortDirection] = useState<boolean>(true);
   const [rowDetails, setRowDetails] = useState<any>('');
-  // eslint-disable-next-line no-unused-vars
   const [pageNumber, setPageNumber] = useState<number>(0);
 
-  const usersPerPage = 10;
-  const pagesVisited = pageNumber * usersPerPage;
-  const displayUsers = cardOperationsData.slice(pagesVisited, pagesVisited + usersPerPage);
-  const pageCount = Math.ceil(cardOperationsData.length / usersPerPage);
-  const changePage = ({ selected }: any) => {
-    setPageNumber(selected);
+  const pagination = {
+    usersPerPage: 10,
+    pagesVisited: function () {
+      return pageNumber * this.usersPerPage;
+    },
+    displayUsers: function () {
+      return cardOperationsData.slice(this.pagesVisited(), this.pagesVisited() + this.usersPerPage);
+    },
+    pageCount: function () {
+      return Math.ceil(cardOperationsData.length / this.usersPerPage);
+    },
+    changePage: function ({ selected }: any) {
+      setPageNumber(selected);
+    },
   };
 
   const getCardOperationsData = async () => {
@@ -59,7 +66,10 @@ const App: React.FC = () => {
 
   const setDetailsRow = (row: any) => {
     setRowDetails(row);
-    console.log(row);
+  };
+
+  const removeTableDetails = () => {
+    setRowDetails('');
   };
 
   if (!cardOperationsData) return null;
@@ -71,7 +81,7 @@ const App: React.FC = () => {
       ) : (
         <>
           <Table
-            programsData={displayUsers}
+            programsData={pagination.displayUsers()}
             sortTableByParams={sortTableByParams}
             direction={sortDirection}
             setDetailsRow={setDetailsRow}
@@ -81,8 +91,8 @@ const App: React.FC = () => {
             pageClassName={'page-item'}
             pageLinkClassName={'page-link'}
             nextLabel={'Next'}
-            pageCount={pageCount}
-            onPageChange={changePage}
+            pageCount={pagination.pageCount()}
+            onPageChange={pagination.changePage}
             containerClassName={'pagination'}
             previousLinkClassName={'page-link'}
             nextLinkClassName={'page-link'}
@@ -91,7 +101,7 @@ const App: React.FC = () => {
             pageRangeDisplayed={2}
             marginPagesDisplayed={0}
           />
-          <TableDetails rowData={rowDetails} />
+          <TableDetails rowData={rowDetails} removeTableDetails={removeTableDetails} />
         </>
       )}
     </div>

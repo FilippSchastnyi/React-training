@@ -1,4 +1,5 @@
 import React, { FC, useState } from 'react';
+import moment from 'moment';
 
 const Table: FC<any> = ({ programsData, sortTableByParams, direction, setDetailsRow }) => {
   const [fieldSortingState, setFieldSortingState] = useState('');
@@ -62,8 +63,8 @@ const Table: FC<any> = ({ programsData, sortTableByParams, direction, setDetails
             return (
               <tr key={row.id} onClick={() => setDetailsRow(row)}>
                 <td>{row.name}</td>
-                <td>{row.created}</td>
-                <td>{row.updated}</td>
+                <td>{moment(row.created).calendar()}</td>
+                <td>{moment(row.updated).calendar()}</td>
               </tr>
             );
           })}

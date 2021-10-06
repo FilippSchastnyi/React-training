@@ -13,29 +13,31 @@ const App: React.FC = () => {
   const [cardOperationsData, setCardOperationsData] = useState<ITableData[]>([]);
   const [sortDirection, setSortDirection] = useState<boolean>(true);
   const [pageNumber, setPageNumber] = useState<number>(0);
-  const [rowDetails, setRowDetails] = useState<ITableData>({
-    accountId: '',
-    active: false,
-    activeDate: '',
-    created: '',
-    icon: '',
-    iconBackground: '',
-    id: '',
-    live: false,
-    name: '',
-    sync: false,
-    syncStats: { status: '' },
-    updated: '',
-  });
+  const [rowDetails, setRowDetails] = useState<ITableData | undefined>(undefined);
 
   const getCardOperationsData = async () => {
     try {
-      const response = await request(`https://api-dev.fidel.uk/v1d/programs/`, 'GET', null, {
-        'fidel-key': config.key,
-      });
+      const response = await request(
+        `https://api-dev.fidel.uk/v1d/programs/?limit=10`,
+        'GET',
+        null,
+        {
+          'fidel-key': config.key,
+        }
+      );
       if (response) {
-        console.log(response.last);
-        setCardOperationsData(response.items);
+        const secondResponse = await request(
+          `https://api-dev.fidel.uk/v1d/programs/?limit=1/&start=${encodeURIComponent(
+            JSON.stringify(response.last)
+          )}`,
+          'GET',
+          null,
+          {
+            'fidel-key': config.key,
+          }
+        );
+        console.log(secondResponse);
+        setCardOperationsData([...response.items, ...secondResponse.items]);
       }
     } catch (e) {
       console.log(e);
@@ -67,20 +69,7 @@ const App: React.FC = () => {
   };
 
   const removeTableDetails = () => {
-    setRowDetails({
-      accountId: '',
-      active: false,
-      activeDate: '',
-      created: '',
-      icon: '',
-      iconBackground: '',
-      id: '',
-      live: false,
-      name: '',
-      sync: false,
-      syncStats: { status: '' },
-      updated: '',
-    });
+    setRowDetails(undefined);
   };
 
   const { displayUsers, pageCount, changePage } = paginationSettings(
@@ -91,6 +80,7 @@ const App: React.FC = () => {
   );
 
   if (!cardOperationsData) return null;
+  console.log(cardOperationsData);
 
   return (
     <div className="container">

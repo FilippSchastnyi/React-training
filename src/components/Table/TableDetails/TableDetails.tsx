@@ -3,7 +3,7 @@ import moment from 'moment';
 import { ITableData } from '../../../interfaces/Table/ITableData';
 
 interface TableListProps {
-  rowData: ITableData;
+  rowData: ITableData | undefined;
   removeTableDetails: () => void;
 }
 

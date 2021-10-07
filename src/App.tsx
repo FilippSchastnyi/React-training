@@ -25,20 +25,32 @@ const App: React.FC = () => {
           'fidel-key': config.key,
         }
       );
-      if (response) {
-        const secondResponse = await request(
-          `https://api-dev.fidel.uk/v1d/programs/?limit=1/&start=${encodeURIComponent(
-            JSON.stringify(response.last)
-          )}`,
-          'GET',
-          null,
-          {
-            'fidel-key': config.key,
-          }
-        );
-        console.log(secondResponse);
-        setCardOperationsData([...response.items, ...secondResponse.items]);
-      }
+      const secondResponse = await request(
+        `https://api-dev.fidel.uk/v1d/programs/?limit=10&start=${encodeURIComponent(
+          JSON.stringify(response.last)
+        )}`,
+        'GET',
+        null,
+        {
+          'fidel-key': config.key,
+        }
+      );
+      const thirdResponse = await request(
+        `https://api-dev.fidel.uk/v1d/programs/?limit=10&start=${encodeURIComponent(
+          JSON.stringify(secondResponse.last)
+        )}`,
+        'GET',
+        null,
+        {
+          'fidel-key': config.key,
+        }
+      );
+
+      console.log(response);
+      console.log(secondResponse);
+      console.log(thirdResponse);
+
+      setCardOperationsData([...response.items, ...secondResponse.items, ...thirdResponse.items]);
     } catch (e) {
       console.log(e);
     }

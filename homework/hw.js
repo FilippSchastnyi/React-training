@@ -1,4 +1,4 @@
-// eslint-disable-next-line no-unused-vars
+/* // eslint-disable-next-line no-unused-vars
 const presidents = [
   { first: 'George', last: 'Washington', born: 1732, died: 1799 },
   { first: 'John', last: 'Adams', born: 1735, died: 1826 },
@@ -69,7 +69,7 @@ console.log(firstAndLastNameFu(presidents));
 const fromOldest = (persons) => [...persons].sort((a, b) => a.born - b.born);
 console.log(fromOldest(presidents));
 
-/*
+/!*
 // Array.prototype.reduce()
 // 4. Подсчитать общее количество лет жизни всех президентов
 
@@ -103,4 +103,38 @@ const data = ['truck', 'car', 'car', 'truck', 'bike', 'walk', 'car', 'van', 'bik
 // 9. Упражнение по использованию методов .foEach и Object.keys();
 // Создать массив, который будет содержать только уникальные значения данного массива:
 const fruits = ['apples', 'bananas', 'oranges', 'apples', 'grapes', 'bananas', 'peaches',
-  'strawberries', 'oranges', 'apricots', 'bananas'];*/
+  'strawberries', 'oranges', 'apricots', 'bananas'];*!/*/
+
+const tree = {
+  hello: 'world',
+  a: {
+    b: {
+      c: {
+        d: 'e',
+      },
+    },
+  },
+  quarks: {
+    up: 'down',
+    charm: 'strange',
+    top: 'bottom',
+  },
+};
+let val = [];
+const getFiniteValue = (obj) => {
+  const getProp = (o) => {
+    for (const prop in o) {
+      if (typeof o[prop] === 'object') {
+        val.push(prop);
+        getProp(o[prop]);
+      } else {
+        val.push(prop);
+        console.log({ [val.join('/')]: o[prop] });
+        val = [];
+      }
+    }
+  };
+  getProp(obj);
+};
+
+getFiniteValue(tree);

@@ -4,34 +4,53 @@ import Table from './components/Table/Table';
 import config from './config/default.json';
 import Loader from './components/Loader/Loader';
 import TableDetails from './components/Table/TableDetails/TableDetails';
-// eslint-disable-next-line no-unused-vars
 import ReactPaginate from 'react-paginate';
+import { ITableData } from './interfaces/Table/ITableData';
+import { paginationSettings } from './Helper/PaginationHelper';
 
 const App: React.FC = () => {
   const { request, loading } = useHttp();
-  const [cardOperationsData, setCardOperationsData] = useState<any>([]);
+  const [cardOperationsData, setCardOperationsData] = useState<ITableData[]>([]);
   const [sortDirection, setSortDirection] = useState<boolean>(true);
-  const [rowDetails, setRowDetails] = useState<any>('');
-  // eslint-disable-next-line no-unused-vars
   const [pageNumber, setPageNumber] = useState<number>(0);
-
-  const usersPerPage = 10;
-  const pagesVisited = pageNumber * usersPerPage;
-  const displayUsers = cardOperationsData.slice(pagesVisited, pagesVisited + usersPerPage);
-  const pageCount = Math.ceil(cardOperationsData.length / usersPerPage);
-  const changePage = ({ selected }: any) => {
-    setPageNumber(selected);
-  };
+  const [rowDetails, setRowDetails] = useState<ITableData | undefined>(undefined);
 
   const getCardOperationsData = async () => {
     try {
-      const response = await request(`https://api-dev.fidel.uk/v1d/programs/`, 'GET', null, {
-        'fidel-key': config.key,
-      });
-      if (response) {
-        console.log(response.last);
-        setCardOperationsData(response.items);
-      }
+      const response = await request(
+        `https://api-dev.fidel.uk/v1d/programs/?limit=10`,
+        'GET',
+        null,
+        {
+          'fidel-key': config.key,
+        }
+      );
+      const secondResponse = await request(
+        `https://api-dev.fidel.uk/v1d/programs/?limit=10&start=${encodeURIComponent(
+          JSON.stringify(response.last)
+        )}`,
+        'GET',
+        null,
+        {
+          'fidel-key': config.key,
+        }
+      );
+      const thirdResponse = await request(
+        `https://api-dev.fidel.uk/v1d/programs/?limit=10&start=${encodeURIComponent(
+          JSON.stringify(secondResponse.last)
+        )}`,
+        'GET',
+        null,
+        {
+          'fidel-key': config.key,
+        }
+      );
+
+      console.log(response);
+      console.log(secondResponse);
+      console.log(thirdResponse);
+
+      setCardOperationsData([...response.items, ...secondResponse.items, ...thirdResponse.items]);
     } catch (e) {
       console.log(e);
     }
@@ -43,12 +62,12 @@ const App: React.FC = () => {
 
   const sortTableByParams = (fieldName: string) => {
     if (sortDirection) {
-      const sortData = [...cardOperationsData].sort((a, b): any => {
+      const sortData = [...cardOperationsData].sort((a: any, b: any) => {
         return a[fieldName] > b[fieldName] ? 1 : -1;
       });
       setCardOperationsData(sortData);
     } else {
-      const sortData = [...cardOperationsData].sort((a, b): any => {
+      const sortData = [...cardOperationsData].sort((a: any, b: any) => {
         return a[fieldName] > b[fieldName] ? -1 : 1;
       });
       setCardOperationsData(sortData);
@@ -57,12 +76,23 @@ const App: React.FC = () => {
     setSortDirection(!sortDirection);
   };
 
-  const setDetailsRow = (row: any) => {
+  const setDetailsRow = (row: ITableData) => {
     setRowDetails(row);
-    console.log(row);
   };
 
+  const removeTableDetails = () => {
+    setRowDetails(undefined);
+  };
+
+  const { displayUsers, pageCount, changePage } = paginationSettings(
+    pageNumber,
+    cardOperationsData,
+    setPageNumber,
+    10
+  );
+
   if (!cardOperationsData) return null;
+  console.log(cardOperationsData);
 
   return (
     <div className="container">
@@ -89,9 +119,9 @@ const App: React.FC = () => {
             disabledClassName={'disabled'}
             activeClassName={'active'}
             pageRangeDisplayed={2}
-            marginPagesDisplayed={2}
+            marginPagesDisplayed={0}
           />
-          <TableDetails rowData={rowDetails} />
+          <TableDetails rowData={rowDetails} removeTableDetails={removeTableDetails} />
         </>
       )}
     </div>

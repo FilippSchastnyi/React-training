@@ -1,6 +1,20 @@
 import React, { FC, useState } from 'react';
+import moment from 'moment';
+import { ITableData } from '../../interfaces/Table/ITableData';
 
-const Table: FC<any> = ({ programsData, sortTableByParams, direction, setDetailsRow }) => {
+interface TablePropsList {
+  programsData: ITableData[];
+  sortTableByParams: (fieldName: string) => void;
+  direction: boolean;
+  setDetailsRow: (row: ITableData) => void;
+}
+
+const Table: FC<TablePropsList> = ({
+  programsData,
+  sortTableByParams,
+  direction,
+  setDetailsRow,
+}) => {
   const [fieldSortingState, setFieldSortingState] = useState('');
 
   if (!programsData) return null;
@@ -58,12 +72,12 @@ const Table: FC<any> = ({ programsData, sortTableByParams, direction, setDetails
           </tr>
         </thead>
         <tbody>
-          {programsData.map((row: any) => {
+          {programsData.map((row: ITableData) => {
             return (
               <tr key={row.id} onClick={() => setDetailsRow(row)}>
                 <td>{row.name}</td>
-                <td>{row.created}</td>
-                <td>{row.updated}</td>
+                <td>{moment(row.created).calendar()}</td>
+                <td>{moment(row.updated).calendar()}</td>
               </tr>
             );
           })}
